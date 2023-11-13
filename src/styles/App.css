@@ -1,0 +1,31 @@
+.form{
+    display: none;
+}
+label{
+    font-weight: bold;
+}
+.main{
+    background: url("https://img.freepik.com/free-photo/solid-concrete-wall-textured-backdrop_53876-129493.jpg?w=1060&t=st=1699880935~exp=1699881535~hmac=c8c0ef0ce702893d16888284251b2f8c22d92563f3d2f6c8a5cdb3b648574971");
+    margin-top: 0;
+    padding-top: 0;
+    
+   
+}
+.cardimg{
+    background: url("https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MXx8fGVufDB8fHx8fA%3D%3D");
+    color: rgb(0, 0, 0);
+}
+label{
+    color:white;
+
+}
+.error{
+    color:red;
+
+}
+.img{
+    border-radius: 50%;
+}
+@media only screen and (max-width: 767px) {
+ 
+}
