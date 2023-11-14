@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios";
-import { ErrorMessage, Field, Form, Formik, useFormik } from "formik";
 import "./styles/App.css";
 
 function App() {
@@ -10,6 +9,15 @@ function App() {
   const Url = "https://653526a9c620ba9358ec3537.mockapi.io/UserDetail/";
   const formRef = useRef();
   const buttonRef = useRef();
+  const [name, setname] = useState("");
+  const [mail, setmail] = useState("");
+  const [phone, setphone] = useState("");
+  const [website, setwebsite] = useState("");
+  const [streets, setstreets] = useState("");
+  const [city, setcity] = useState("");
+  const [area, setarea] = useState("");
+  const [pin, setpin] = useState("");
+  const [cname, setcname] = useState("");
 
   function displayForm() {
     formRef.current.style.display = "block";
@@ -28,14 +36,21 @@ function App() {
     fetchData();
   }, []);
 
- 
-  
-  function editData(id,datas) {
+  async function editData(id, datas) {
     formRef.current.style.display = "block";
     buttonRef.current.style.display = "none";
     console.log(datas.name, id);
     document.body.scrollTop = document.documentElement.scrollTop = 0;
-    formik.initialValues.name = "merlin";
+    setname(datas.name);
+    setmail(datas.email);
+    setphone(datas.phone);
+    setwebsite(datas.website);
+    setstreets(datas.address.street);
+    setcity(datas.address.city);
+    setarea(datas.address.suite);
+    setpin(datas.address.zipcode);
+    setcname(datas.company.name);
+    deleteData(id);
   }
   async function deleteData(id) {
     const ddata = await axios
@@ -44,6 +59,44 @@ function App() {
 
     fetchData();
   }
+  const onSubmit = async () => {
+    if (!name ||!phone || !mail) {
+      alert("Name, Phone, Mail is requires.")
+    } else {
+      event.preventDefault();
+    const newdata = {
+      name: name,
+      email: mail,
+      address: {
+        street: streets,
+        suite: area,
+        city: city,
+        zipcode: pin,
+      },
+      phone: phone,
+      website: website,
+      company: {
+        name: cname,
+      },
+    };
+    await axios
+      .post(Url, newdata)
+      .then((response) => response.data)
+      .then((data) => console.log("data added sucessfully..."));
+    formRef.current.style.display = "none";
+    buttonRef.current.style.display = "block";
+     setname("");
+     setmail("");
+     setphone("");
+     setwebsite("");
+     setstreets("");
+     setcity("");
+     setarea("");
+     setpin("");
+     setcname("");
+    fetchData();
+    }
+  };
 
   return (
     <div className="container main ">
@@ -51,80 +104,26 @@ function App() {
       <div className="">
         <h1 className="py-5  text-center text-warning">PROFILE CARDS</h1>
         <div className="container w=100 form" ref={formRef}>
-          <Formik
-            initialValues={{
-              name: "",
-              email: "",
-              phone: "",
-              website: "",
-              street: "",
-              area: "",
-              city: "",
-              pincode: "",
-              cName: "",
-            }}
-            validate={(values) => {
-              const errors = {};
-
-              if (!values.name) {
-                errors.name = "⚠ Name is required";
-              }
-              if (!values.phone) {
-                errors.phone = "⚠ phone number is required";
-              } else if (values.phone.length != 10) {
-                errors.phone = "⚠ please enter the valid number";
-              }
-              if (values.email == "") {
-                errors.email = "⚠ Email is required";
-              } else if (
-                !/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/i.test(values.email)
-              ) {
-                errors.email = "⚠ Invalid email address";
-              }
-
-              return errors;
-            }}
-            onSubmit={async (values) => {
-              const newdata = {
-                name: values.name,
-                username: "",
-                email: values.email,
-                address: {
-                  street: values.street,
-                  suite: values.area,
-                  city: values.city,
-                  zipcode: values.pincode,
-                },
-                phone: values.phone,
-                website: values.website,
-                company: {
-                  name: values.cName,
-                  catchPhrase: "",
-                  bs: "",
-                },
-              };
-              await axios
-                .post(Url, newdata)
-                .then((response) => response.data)
-                .then((data) => console.log("data added sucessfully..."));
-              formRef.current.style.display = "none";
-              buttonRef.current.style.display = "block";
-              fetchData();
-            }}>
-            <Form>
+            <form>
               <div className="d-md-flex w-100 ip">
                 <div className="w-50 d-flex flex-column m-3 ">
                   <label htmlFor="name">Name</label>
-                  <Field type="text" name="name" className="" />
-                  <ErrorMessage name="name" component="div" className="error" />
+                  <input
+                    type="text"
+                    name="name"
+                    className=""
+                    value={name}
+                    onChange={(e) => setname(e.target.value)}
+                  />
                 </div>
                 <div className="w-50 d-flex flex-column m-3 ">
                   <label htmlFor="email">Email</label>
-                  <Field type="email" name="email" className=" " />
-                  <ErrorMessage
+                  <input
+                    type="email"
                     name="email"
-                    component="div"
-                    className="error"
+                    className=" "
+                    value={mail}
+                    onChange={(e) => setmail(e.target.value)}
                   />
                 </div>
               </div>
@@ -132,21 +131,23 @@ function App() {
               <div className="d-md-flex w-sm-75">
                 <div className="w-50 d-flex flex-column m-3">
                   <label htmlFor="phone">Phone</label>
-                  <Field type="phone" name="phone" className="l" />
-                  <ErrorMessage
+                  <input
+                    type="phone"
                     name="phone"
-                    component="div"
-                    className="error"
+                    className=""
+                    value={phone}
+                    onChange={(e) => setphone(e.target.value)}
                   />
                 </div>
 
                 <div className="w-50 d-flex flex-column m-3">
                   <label htmlFor="website">Website</label>
-                  <Field type="text" name="website" className="" />
-                  <ErrorMessage
+                  <input
+                    type="text"
                     name="website"
-                    component="div"
-                    className="error"
+                    className=""
+                    value={website}
+                    onChange={(e) => setwebsite(e.target.value)}
                   />
                 </div>
               </div>
@@ -155,15 +156,39 @@ function App() {
                 <div className="d-md-flex w-sm-75">
                   <div className="w-50 d-flex flex-column m-3">
                     <label htmlFor="street">Street :</label>
-                    <Field type="text" name="street" className="mb-3" />
+                    <input
+                      type="text"
+                      name="street"
+                      className="mb-3"
+                      value={streets}
+                      onChange={(e) => setstreets(e.target.value)}
+                    />
                     <label htmlFor="area">Area :</label>
-                    <Field type="text" name="area" className="" />
+                    <input
+                      type="text"
+                      name="area"
+                      className=""
+                      value={area}
+                      onChange={(e) => setarea(e.target.value)}
+                    />
                   </div>
                   <div className="w-50 d-flex flex-column m-3">
                     <label htmlFor="city">City :</label>
-                    <Field type="text" name="city" className="mb-3" />
+                    <input
+                      type="text"
+                      name="city"
+                      className="mb-3"
+                      value={city}
+                      onChange={(e) => setcity(e.target.value)}
+                    />
                     <label htmlFor="pincode">Pincode :</label>
-                    <Field type="text" name="pincode" className="" />
+                    <input
+                      type="text"
+                      name="pincode"
+                      className=""
+                      value={pin}
+                      onChange={(e) => setpin(e.target.value)}
+                    />
                   </div>
                 </div>
               </div>
@@ -171,15 +196,23 @@ function App() {
                 <label htmlFor="company">Company Detail </label>
                 <div className="w-50 d-flex flex-column m-3">
                   <label htmlFor="cName">Company Name : </label>
-                  <Field type="text" name="cName" className="" />
+                  <input
+                    type="text"
+                    name="cName"
+                    className=""
+                    value={cname}
+                    onChange={(e) => setcname(e.target.value)}
+                  />
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-success mx-1 w-auto">
+              <button
+                type="submit"
+                className="btn btn-success mx-1 w-auto"
+                onClick={onSubmit}>
                 Submit
               </button>
-            </Form>
-          </Formik>
+            </form>
         </div>
         <div ref={buttonRef}>
           <button onClick={displayForm} className="btn btn-info mx-1 w-auto">
@@ -189,7 +222,7 @@ function App() {
         <div className="mt-5">
           {/* card section */}
           <div className="row">
-            {data.reverse().map((datas) => (
+            {data.map((datas) => (
               <div className=" col-md-6 col-lg-4 py-3 " key={datas.id}>
                 <div className="card rounded p-3 cardimg">
                   <div className="card-body ">
@@ -220,7 +253,7 @@ function App() {
                     </div>
                     <button
                       className="btn btn-primary mx-1 w-auto"
-                      onClick={() => editData(datas.id,datas)}>
+                      onClick={() => editData(datas.id, datas)}>
                       Edit
                     </button>
                     <button
